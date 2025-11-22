@@ -231,13 +231,9 @@ public class Banque extends javax.swing.JFrame {
     }// GEN-LAST:event_btnImporterLesFichiersCSVActionPerformed
 
     private void btnVoirMouvementsActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnVoirMouvementsActionPerformed
-        JFrame frame = new exampleJframe();
-        frame.setTitle("Historiques de mouvements");
-        frame.setSize(800, 800);
-        frame.setLocationRelativeTo(null);
+        // Nouvelle fenêtre avec recherche avancée
+        var frame = new HistoriqueSearchFrame();
         frame.setVisible(true);
-        // frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }// GEN-LAST:event_btnVoirMouvementsActionPerformed
 
     private void btnCalculCumulsActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnCalculCumulsActionPerformed
