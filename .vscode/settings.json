@@ -1,4 +1,4 @@
-﻿{
+{
     "java.project.referencedLibraries": [
         "lib/mysql-connector-java-8.0.29.jar",
         "lib/opencsv-5.7.1.jar",
@@ -9,6 +9,10 @@
         "lib/commons-logging-1.2.jar",
         "lib/commons-beanutils-1.9.3.jar",
         "lib/commons-text-1.1.jar"
+    ],
+    "java.project.sourcePaths": [
+        "src",
+        "src/resources"
     ],
     "java.test.defaultConfig": "testNG",
     "[java]": {

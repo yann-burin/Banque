@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Banque",
+            "request": "launch",
+            "mainClass": "banque.Banque",
+            "projectName": "banque_4d95d136"
+        }
+    ]
+}
