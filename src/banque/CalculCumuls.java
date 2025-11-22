@@ -30,7 +30,8 @@ import java.util.Properties;
 public class CalculCumuls {
 
     // Méthode proncipale
-    public static void main(String[] args) throws FileNotFoundException, IOException, SQLException, CsvException, ParseException {
+    public static void main(String[] args)
+            throws FileNotFoundException, IOException, SQLException, CsvException, ParseException {
 
         WriteFile.writeFile("INFO", "-------------> CalculCumuls début Main()", logFile);
 
@@ -43,7 +44,7 @@ public class CalculCumuls {
         String password = dbConnProperties.getProperty("password");
 
         // Ouvre la connexion à la base
-        connectionDB = DBConnection.DBConnection(host, base, username, password);
+        connectionDB = DBConnection.getConnection(host, base, username, password);
 
         CalculCumuls runCalcul = new CalculCumuls();
         runCalcul.razCumulHistorique(connectionDB);
@@ -68,47 +69,49 @@ public class CalculCumuls {
     public void calculCumulEurosCalc(Connection connection) throws SQLException {
 
         String sep = "\\";
-        Double tempEuros=0.0;
-        int i=0;
-        
+        Double tempEuros = 0.0;
+        int i = 0;
+
         // Charge les historiques de mouvements correspondants aux fichiers importés
         String sqlHistorique = "select num,compte,Date,seqinsameday,Libelle,euros,cumul_euros_calc,cumul_euros_saisi, fichier_import "
                 + " from historique "
                 + " order by compte,Date asc,seqinsameday desc";
-        try ( PreparedStatement statementHistorique = connectionDB.prepareStatement(sqlHistorique,
-                ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);  ResultSet rsHistorique2 = statementHistorique.executeQuery();) {
+        try (PreparedStatement statementHistorique = connectionDB.prepareStatement(sqlHistorique,
+                ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+                ResultSet rsHistorique2 = statementHistorique.executeQuery();) {
             while (rsHistorique2.next()) {
-                i=i+1;
+                i = i + 1;
                 String compte = rsHistorique2.getString("compte");
                 Date date = rsHistorique2.getDate("date");
                 int seqinsameday = rsHistorique2.getInt("seqinsameday");
                 Double euros = rsHistorique2.getDouble("euros");
                 Double cumulEurosCalc = rsHistorique2.getDouble("cumul_euros_calc");
                 Double cumulEurosSaisi = rsHistorique2.getDouble("cumul_euros_saisi");
-                
-                tempEuros=tempEuros+euros;                
-                
-                WriteFile.writeFile("INFO", i+" -------------> " + CalculCumuls.class.getName() 
-                        + "AVANT : date: "+date
-                        +", seqinsameday: "+seqinsameday
-                        +", euros: "+euros
-                        +", cumulEurosCalc: "+cumulEurosCalc
-                        +", tempEuros: "+tempEuros.floatValue()
-                        +", cumulEurosSaisi: "+cumulEurosSaisi, logFile);
-                
-                // indique dasn l'historique des mouvements la situation indiquée dans le fichier importé
-                rsHistorique2.updateDouble("cumul_euros_calc",tempEuros.floatValue());
-                rsHistorique2.updateInt("num",i);
+
+                tempEuros = tempEuros + euros;
+
+                WriteFile.writeFile("INFO", i + " -------------> " + CalculCumuls.class.getName()
+                        + "AVANT : date: " + date
+                        + ", seqinsameday: " + seqinsameday
+                        + ", euros: " + euros
+                        + ", cumulEurosCalc: " + cumulEurosCalc
+                        + ", tempEuros: " + tempEuros.floatValue()
+                        + ", cumulEurosSaisi: " + cumulEurosSaisi, logFile);
+
+                // indique dasn l'historique des mouvements la situation indiquée dans le
+                // fichier importé
+                rsHistorique2.updateDouble("cumul_euros_calc", tempEuros.floatValue());
+                rsHistorique2.updateInt("num", i);
                 rsHistorique2.updateRow();
                 /*
-                WriteFile.writeFile("INFO", "-------------> " + CalculCumuls.class.getName() 
-                        + "APRES : date: "+date
-                        +", seqinsameday: "+seqinsameday
-                        +", euros: "+euros
-                        +", cumulEurosCalc: "+cumulEurosCalc
-                        +", tempEuros: "+tempEuros
-                        +", cumulEurosSaisi: "+cumulEurosSaisi, logFile);                
-                */
+                 * WriteFile.writeFile("INFO", "-------------> " + CalculCumuls.class.getName()
+                 * + "APRES : date: "+date
+                 * +", seqinsameday: "+seqinsameday
+                 * +", euros: "+euros
+                 * +", cumulEurosCalc: "+cumulEurosCalc
+                 * +", tempEuros: "+tempEuros
+                 * +", cumulEurosSaisi: "+cumulEurosSaisi, logFile);
+                 */
             }
             rsHistorique2.close();
 
@@ -124,8 +127,9 @@ public class CalculCumuls {
 
         // Charge les fichiers importés
         String sqlImport = "SELECT compte,repertoire,fichier, date_situation,euros_situation,date_first_mouvement,date_last_mouvement FROM banque.import_fichiers where compte ='65022812330' and is_imported is true order by date_situation asc";
-        try ( PreparedStatement statementImport = connectionDB.prepareStatement(sqlImport,
-                ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);  ResultSet rsImport = statementImport.executeQuery();) {
+        try (PreparedStatement statementImport = connectionDB.prepareStatement(sqlImport,
+                ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                ResultSet rsImport = statementImport.executeQuery();) {
             while (rsImport.next()) {
                 String compteImport = rsImport.getString("compte");
                 Date dateLastMouvementImport = rsImport.getDate("date_last_mouvement");
@@ -133,29 +137,36 @@ public class CalculCumuls {
                 String repertoireImport = rsImport.getString("repertoire");
                 String fichierImport = rsImport.getString("fichier");
 
-                //WriteFile.writeFile("INFO", "-------------> " + CalculCumuls.class.getName() + ": fichierImport " + fichierImport, logFile);
+                // WriteFile.writeFile("INFO", "-------------> " + CalculCumuls.class.getName()
+                // + ": fichierImport " + fichierImport, logFile);
 
                 // Charge les historiques de mouvements correspondants aux fichiers importés
                 String sqlHistorique = "select compte,Date,seqinsameday,Libelle,euros,cumul_euros_calc,cumul_euros_saisi, fichier_import "
                         + " from historique "
                         + " where compte='" + compteImport + "' "
                         + " and date=date('" + dateLastMouvementImport + "') "
-                        + " and fichier_import='" + repertoireImport.replace(sep, sep + sep) + sep + sep + fichierImport + "' "
+                        + " and fichier_import='" + repertoireImport.replace(sep, sep + sep) + sep + sep + fichierImport
+                        + "' "
                         + " and seqinsameday=1 "
                         + " order by compte,Date desc,seqinsameday asc";
-                //WriteFile.writeFile("INFO", "-------------> " + CalculCumuls.class.getName() + ": sqlHistorique " + sqlHistorique, logFile);
-                try ( PreparedStatement statementHistorique = connectionDB.prepareStatement(sqlHistorique,
-                        ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);  ResultSet rsHistorique = statementHistorique.executeQuery();) {
+                // WriteFile.writeFile("INFO", "-------------> " + CalculCumuls.class.getName()
+                // + ": sqlHistorique " + sqlHistorique, logFile);
+                try (PreparedStatement statementHistorique = connectionDB.prepareStatement(sqlHistorique,
+                        ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+                        ResultSet rsHistorique = statementHistorique.executeQuery();) {
                     while (rsHistorique.next()) {
                         String compte = rsHistorique.getString("compte");
                         Date date = rsHistorique.getDate("date");
                         int seqinsameday = rsHistorique.getInt("seqinsameday");
                         Double euros = rsHistorique.getDouble("euros");
-                        // indique dasn l'historique des mouvements la situation indiquée dans le fichier importé
+                        // indique dasn l'historique des mouvements la situation indiquée dans le
+                        // fichier importé
                         rsHistorique.updateDouble("cumul_euros_saisi", eurosSituationImport);
                         rsHistorique.updateRow();
-                        
-                        //WriteFile.writeFile("INFO", "-------------> " + CalculCumuls.class.getName() + ": sep " + repertoireImport.replace(sep, sep + sep) + sep + sep + fichierImport, logFile);
+
+                        // WriteFile.writeFile("INFO", "-------------> " + CalculCumuls.class.getName()
+                        // + ": sep " + repertoireImport.replace(sep, sep + sep) + sep + sep +
+                        // fichierImport, logFile);
 
                     }
                     rsHistorique.close();
