@@ -1,0 +1,18 @@
+﻿{
+    "java.project.referencedLibraries": [
+        "lib/mysql-connector-java-8.0.29.jar",
+        "lib/opencsv-5.7.1.jar",
+        "lib/jfreechart-1.5.3.jar",
+        "lib/jcommon.jar",
+        "lib/commons-collections-3.2.2.jar",
+        "lib/commons-lang3-3.6.jar",
+        "lib/commons-logging-1.2.jar",
+        "lib/commons-beanutils-1.9.3.jar",
+        "lib/commons-text-1.1.jar"
+    ],
+    "java.test.defaultConfig": "testNG",
+    "[java]": {
+        "editor.defaultFormatter": "redhat.java",
+        "editor.formatOnSave": true
+    }
+}
