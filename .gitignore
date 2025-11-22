@@ -72,4 +72,4 @@ desktop.ini
 *.sqlite3
 
 # Configuration locale (ajustez selon vos besoins)
-# banque.properties
+src/resources/banque.properties
